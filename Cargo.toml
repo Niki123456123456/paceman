@@ -1,0 +1,21 @@
+[package]
+name = "paceman"
+version = "0.1.0"
+edition = "2021"
+authors = ["Niklas Nordkamp"]
+
+[dependencies]
+egui_dock = "0.10.0"
+strum = "0.25.0"
+strum_macros = "0.25"
+reqwest = { version = "0.11", features = ["blocking"] }
+chrono = { version = "0.4.31", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+egui_extras = "0.25.0"
+egui = "0.25.0"
+eframe = { version = "0.25.0", default-features = false, features = [
+    "accesskit",     
+    "default_fonts", 
+    "glow",        
+    "persistence", 
+] }
