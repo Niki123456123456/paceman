@@ -19,3 +19,4 @@ eframe = { version = "0.25.0", default-features = false, features = [
     "glow",        
     "persistence", 
 ] }
+parsing = { path = "C:/Projects/parsing" }

@@ -2143,6 +2143,7 @@ dependencies = [
  "egui",
  "egui_dock",
  "egui_extras",
+ "parsing",
  "reqwest",
  "serde",
  "strum",
@@ -2177,6 +2178,10 @@ dependencies = [
  "smallvec",
  "windows-targets 0.48.5",
 ]
+
+[[package]]
+name = "parsing"
+version = "0.1.0"
 
 [[package]]
 name = "paste"

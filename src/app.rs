@@ -1,7 +1,8 @@
-use std::str::FromStr;
+use std::{collections::HashMap, str::FromStr};
 
-use egui::{Button, Label, TextBuffer, TextEdit, Ui, Widget};
+use egui::{ text::LayoutSection, Button, Color32, Label, TextBuffer, TextEdit, TextFormat, Ui, Widget};
 use egui_extras::{Column, TableBuilder};
+use parsing::{colorizer::{self, Color}, languages::json, rules::grammar};
 use reqwest::Url;
 use strum::{AsStaticRef, IntoEnumIterator};
 
@@ -130,8 +131,43 @@ impl eframe::App for App {
                                 resp,
                                 vec![
                                     TabItem::new("Body", |ui: &mut Ui, resp: &mut Response| {
+                                        let mut layouter = |ui: &egui::Ui, string: &str, wrap_width: f32| {
+                                            let mut layout_job: egui::text::LayoutJob = egui::text::LayoutJob::default();
+                                            layout_job.append(&string, 0., Default::default());
+                                            layout_job.wrap.max_width = wrap_width;
+
+                                            let grammar = json::grammar();
+                                            let nodes = grammar.parse("value", &string);
+                                            let mut colors = HashMap::new();
+                                            colors.insert("STRING", Color::from_rgb(205, 124, 111));
+                                            colors.insert("NULL", Color::from_rgb(66, 146, 205));
+                                            colors.insert("TRUE", Color::from_rgb(66, 146, 205));
+                                            colors.insert("FALSE", Color::from_rgb(66, 146, 205));
+                                            colors.insert("NUMBER", Color::from_rgb(168, 199, 161));
+                                            let mut sections = colorizer::colorize(string.len(), &colors, &nodes).into_iter().map(|x|LayoutSection{
+                                                byte_range: x.range,
+                                                format: TextFormat{
+                                                    color: Color32::from_rgba_premultiplied(x.color.0[0], x.color.0[1], x.color.0[2], x.color.0[3]),
+                                                    ..Default::default()
+                                                },
+                                                leading_space: 0.,
+                                            }).collect();
+
+                            
+                            
+                                            layout_job.sections.clear();
+                                            layout_job
+                                                .sections
+                                                .append(&mut sections);
+                            
+                                            let galley = ui.fonts(|f| f.layout_job(layout_job));
+                                            return galley;
+                                        };
+
                                         TextEdit::multiline(&mut resp.text)
-                                            .desired_width(ui.available_width())
+                                            .code_editor()
+                                            .desired_width(f32::INFINITY)
+                                            .font(egui::TextStyle::Monospace)//.layouter(&mut layouter)
                                             .ui(ui);
                                     }),
                                     TabItem::new("Headers", |ui: &mut Ui, resp: &mut Response| {
